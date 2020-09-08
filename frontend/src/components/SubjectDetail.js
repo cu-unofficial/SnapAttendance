@@ -16,6 +16,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
+import Fab from '@material-ui/core/Fab';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import Tooltip from '@material-ui/core/Tooltip';
+import FullReport from './FullReport'
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -32,7 +36,12 @@ const useStyles = makeStyles((theme) => ({
     secondary: {
         color: 'textSecondary',
         float: 'right'
-    }
+    },
+    fab: {
+        position: 'fixed',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+    },
 }));
 
 const circularProgressTheme = createMuiTheme({
@@ -89,9 +98,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function SubjectDetail(props) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
+    const fullattendance = props.fullAttendance
     const handleClose = () => {
         setOpen(false);
         props.close({});
+        window.history.back();
     };
 
     function calcuteLectures(props, req)
@@ -175,6 +186,17 @@ function SubjectDetail(props) {
                     <ListItemText primary='Subject Code' secondary={props.subject.Code} />
                 </ListItem>
             </List>
+            <Tooltip title="View full report">
+                {props.fullLoading ? 
+                        <Fab color="primary" className={classes.fab}>
+                            <CircularProgress color="inherit" />
+                        </Fab> :
+                        <Fab disabled={props.fullLoading} onClick={() => {props.drawerHandler(true); window.location.hash += `#expanded`}} color="primary" className={classes.fab}>
+                            <AssignmentIcon/>
+                        </Fab>
+                }
+            </Tooltip>
+            {props.drawerState?<FullReport data={fullattendance} code={props.subject.Code} close={props.drawerHandler}/> : null}
         </Dialog>
     )
 }
